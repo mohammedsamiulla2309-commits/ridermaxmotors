@@ -90,6 +90,9 @@ function Home() {
         </div>
       </section>
 
+      {/* TEST RIDE FORM */}
+      <FilloutEmbed />
+
       {/* CATEGORIES */}
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
         <div className="flex items-end justify-between">
