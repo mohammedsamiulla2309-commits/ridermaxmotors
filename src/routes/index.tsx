@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Bike, Zap, Award, Shield, Star, Quote } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { ProductCard } from "@/components/ProductCard";
+import { FilloutEmbed } from "@/components/FilloutEmbed";
 import { products } from "@/data/products";
 import hero from "@/assets/hero-bike.jpg";
 
@@ -88,6 +89,9 @@ function Home() {
           </div>
         </div>
       </section>
+
+      {/* TEST RIDE FORM */}
+      <FilloutEmbed />
 
       {/* CATEGORIES */}
       <section className="mx-auto max-w-7xl px-4 py-20 md:px-8">
