@@ -15,12 +15,7 @@ function encodeBasicAuth(value: string) {
   return Buffer.from(value).toString("base64");
 }
 
-async function twilioRequest(
-  path: string,
-  body: URLSearchParams,
-  sid: string,
-  token: string,
-) {
+async function twilioRequest(path: string, body: URLSearchParams, sid: string, token: string) {
   const res = await fetch(`${TWILIO_BASE}/Accounts/${sid}/${path}`, {
     method: "POST",
     headers: {
