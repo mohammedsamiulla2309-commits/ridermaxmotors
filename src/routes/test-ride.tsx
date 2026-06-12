@@ -67,8 +67,9 @@ function TestRidePage() {
             <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
             <h2 className="mt-4 font-display text-4xl">Booking Confirmed!</h2>
             <p className="mt-3 text-muted-foreground">
-              Thanks {form.name.split(" ")[0]} — we'll call you on +91 {form.phone} to confirm your test ride for the {form.model}.
+              Thanks {form.name.split(" ")[0]} — {callError ? callError : `we're calling you now on +91 ${form.phone} to confirm your test ride for the ${form.model}.`}
             </p>
+
             <button
               onClick={() => { setDone(false); setForm({ name: "", phone: "", email: "", model: "", date: "" }); }}
               className="mt-6 rounded-md bg-gradient-red px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow"
