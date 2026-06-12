@@ -101,9 +101,11 @@ function TestRidePage() {
                 </Field>
               </div>
             </div>
-            <button type="submit" className="mt-8 w-full rounded-md bg-gradient-red px-6 py-4 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
-              Confirm Test Ride Booking
+            <button type="submit" disabled={submitting} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gradient-red px-6 py-4 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-70">
+              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {submitting ? "Placing your call…" : "Confirm Test Ride Booking"}
             </button>
+
           </form>
         )}
       </section>
