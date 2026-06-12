@@ -1,10 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { z } from "zod";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHeader } from "@/components/PageHeader";
 import { products } from "@/data/products";
+import { triggerCustomerCall } from "@/lib/api/twilio.functions";
+
 
 export const Route = createFileRoute("/test-ride")({
   head: () => ({
@@ -28,8 +30,10 @@ function TestRidePage() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", model: "", date: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [callError, setCallError] = useState<string | null>(null);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = schema.safeParse(form);
     if (!res.success) {
@@ -39,8 +43,19 @@ function TestRidePage() {
       return;
     }
     setErrors({});
-    setDone(true);
+    setCallError(null);
+    setSubmitting(true);
+    try {
+      await triggerCustomerCall({ data: { phone: form.phone, name: form.name, model: form.model } });
+    } catch (err) {
+      console.error(err);
+      setCallError("We couldn't place the call right now, but your booking is saved. Our team will reach out.");
+    } finally {
+      setSubmitting(false);
+      setDone(true);
+    }
   };
+
 
   return (
     <Layout>
@@ -52,8 +67,9 @@ function TestRidePage() {
             <CheckCircle2 className="mx-auto h-16 w-16 text-primary" />
             <h2 className="mt-4 font-display text-4xl">Booking Confirmed!</h2>
             <p className="mt-3 text-muted-foreground">
-              Thanks {form.name.split(" ")[0]} — we'll call you on +91 {form.phone} to confirm your test ride for the {form.model}.
+              Thanks {form.name.split(" ")[0]} — {callError ? callError : `we're calling you now on +91 ${form.phone} to confirm your test ride for the ${form.model}.`}
             </p>
+
             <button
               onClick={() => { setDone(false); setForm({ name: "", phone: "", email: "", model: "", date: "" }); }}
               className="mt-6 rounded-md bg-gradient-red px-6 py-3 text-sm font-semibold text-primary-foreground shadow-glow"
@@ -85,9 +101,11 @@ function TestRidePage() {
                 </Field>
               </div>
             </div>
-            <button type="submit" className="mt-8 w-full rounded-md bg-gradient-red px-6 py-4 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02]">
-              Confirm Test Ride Booking
+            <button type="submit" disabled={submitting} className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-md bg-gradient-red px-6 py-4 font-semibold text-primary-foreground shadow-glow transition-transform hover:scale-[1.02] disabled:opacity-70">
+              {submitting && <Loader2 className="h-4 w-4 animate-spin" />}
+              {submitting ? "Placing your call…" : "Confirm Test Ride Booking"}
             </button>
+
           </form>
         )}
       </section>
