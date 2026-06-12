@@ -30,8 +30,10 @@ function TestRidePage() {
   const [form, setForm] = useState({ name: "", phone: "", email: "", model: "", date: "" });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [callError, setCallError] = useState<string | null>(null);
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const res = schema.safeParse(form);
     if (!res.success) {
@@ -41,8 +43,19 @@ function TestRidePage() {
       return;
     }
     setErrors({});
-    setDone(true);
+    setCallError(null);
+    setSubmitting(true);
+    try {
+      await triggerCustomerCall({ data: { phone: form.phone, name: form.name, model: form.model } });
+    } catch (err) {
+      console.error(err);
+      setCallError("We couldn't place the call right now, but your booking is saved. Our team will reach out.");
+    } finally {
+      setSubmitting(false);
+      setDone(true);
+    }
   };
+
 
   return (
     <Layout>
