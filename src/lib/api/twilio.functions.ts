@@ -18,8 +18,9 @@ export const triggerCustomerCall = createServerFn({ method: "POST" })
     }
 
     const to = `+91${data.phone}`;
-    const message = `Hello ${data.name}, thank you for booking a test ride with RideZone Motors for the ${data.model}. Our team will be in touch shortly to confirm. Goodbye!`;
-    const twiml = `<Response><Say voice="alice">${message.replace(/[<&>]/g, "")}</Say></Response>`;
+    // Silent call — customer's phone rings; line stays open briefly then hangs up.
+    const twiml = `<Response><Pause length="20"/><Hangup/></Response>`;
+
 
     const url = `https://api.twilio.com/2010-04-01/Accounts/${sid}/Calls.json`;
     const body = new URLSearchParams({ To: to, From: from, Twiml: twiml });
