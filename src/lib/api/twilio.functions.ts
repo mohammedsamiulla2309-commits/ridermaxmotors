@@ -2,6 +2,18 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 const TWILIO_BASE = "https://api.twilio.com/2010-04-01";
+const DEFAULT_TWILIO_FROM_NUMBER = "+14849176654";
+
+function normalizePhoneNumber(value: string) {
+  const trimmed = value.trim();
+  if (trimmed.startsWith("+")) return trimmed.replace(/\s+/g, "");
+  return `+91${trimmed.replace(/\D/g, "")}`;
+}
+
+function encodeBasicAuth(value: string) {
+  if (typeof btoa === "function") return btoa(value);
+  return Buffer.from(value).toString("base64");
+}
 
 async function twilioRequest(
   path: string,
@@ -12,7 +24,7 @@ async function twilioRequest(
   const res = await fetch(`${TWILIO_BASE}/Accounts/${sid}/${path}`, {
     method: "POST",
     headers: {
-      Authorization: `Basic ${btoa(`${sid}:${token}`)}`,
+      Authorization: `Basic ${encodeBasicAuth(`${sid}:${token}`)}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body,
@@ -46,7 +58,7 @@ async function sendSms(to: string, from: string, body: string, sid: string, toke
 export const triggerCustomerCall = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
-      phone: z.string().regex(/^[6-9]\d{9}$/),
+      phone: z.string().min(10).max(16),
       name: z.string().min(1).max(80),
       model: z.string().min(1).max(120),
     }),
@@ -54,13 +66,13 @@ export const triggerCustomerCall = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const sid = process.env.TWILIO_ACCOUNT_SID;
     const token = process.env.TWILIO_AUTH_TOKEN;
-    const from = process.env.TWILIO_FROM_NUMBER;
+    const from = normalizePhoneNumber(process.env.TWILIO_FROM_NUMBER || DEFAULT_TWILIO_FROM_NUMBER);
     const adminNumber = process.env.ADMIN_NOTIFY_NUMBER;
-    if (!sid || !token || !from) {
+    if (!sid || !token) {
       throw new Error("Twilio is not configured");
     }
 
-    const to = `+91${data.phone}`;
+    const to = normalizePhoneNumber(data.phone);
     const maxAttempts = 2;
     let lastError: unknown = null;
 
