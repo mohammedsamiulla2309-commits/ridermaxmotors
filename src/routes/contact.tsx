@@ -6,7 +6,7 @@ import { PageHeader } from "@/components/PageHeader";
 export const Route = createFileRoute("/contact")({
   head: () => ({
     meta: [
-      { title: "Contact Us — RideZone Motors" },
+      { title: "Contact Us Today — RideZone Motors" },
       { name: "description", content: "Visit our showroom or get in touch. Address, phone, email and directions." },
     ],
   }),
