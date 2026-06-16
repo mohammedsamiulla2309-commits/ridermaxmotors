@@ -5,7 +5,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import { Layout } from "@/components/Layout";
 import { PageHeader } from "@/components/PageHeader";
 import { products } from "@/data/products";
-import { triggerCustomerCall } from "@/lib/api/twilio.functions";
+import { triggerCustomerCall } from "@/lib/api/vapi.functions";
 
 
 export const Route = createFileRoute("/test-ride")({
